@@ -1,0 +1,195 @@
+تمام! 🚀
+خلينا نكمل ونجهز لك كل الشاشات + واجهات جاهزة + نظام تحديد المستشفيات + حجز المواعيد + الربط مع الذكاء الاصطناعي.
+
+
+---
+
+1️⃣ HomeScreen.js (الصفحة الرئيسية)
+
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+
+export default function HomeScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>مرحبا بك في دار الشفاء</Text>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("MedicalAI")}
+      >
+        <Text style={styles.buttonText}>الاستشارة الطبية بالذكاء الاصطناعي</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("HospitalList")}
+      >
+        <Text style={styles.buttonText}>البحث عن أقرب مستشفى / مركز صحي</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 40 },
+  button: {
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 10,
+    width: "100%",
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", fontSize: 18, textAlign: "center" },
+});
+
+
+---
+
+2️⃣ HospitalList.js (عرض المستشفيات القريبة)
+
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { getCurrentLocation } from "../services/locationService";
+import { getNearbyHospitals } from "../services/hospitalService";
+
+export default function HospitalList({ navigation }) {
+  const [hospitals, setHospitals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const loc = await getCurrentLocation();
+      if (!loc) return;
+      const data = await getNearbyHospitals(loc.latitude, loc.longitude);
+      setHospitals(data);
+      setLoading(false);
+    })();
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate("BookAppointment", { hospital: item })}
+    >
+      <Text style={styles.hospitalName}>{item.name}</Text>
+      <Text style={styles.hospitalAddress}>{item.vicinity}</Text>
+    </TouchableOpacity>
+  );
+
+  if (loading) return <Text style={{ textAlign: "center", marginTop: 50 }}>جاري البحث عن المستشفيات...</Text>;
+
+  return (
+    <FlatList
+      data={hospitals}
+      keyExtractor={(item) => item.place_id}
+      renderItem={renderItem}
+      contentContainerStyle={{ padding: 20 }}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "#f2f2f2",
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 10,
+  },
+  hospitalName: { fontSize: 18, fontWeight: "bold" },
+  hospitalAddress: { fontSize: 14, color: "#555" },
+});
+
+
+---
+
+3️⃣ BookAppointment.js (حجز موعد)
+
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+
+export default function BookAppointment({ route }) {
+  const { hospital } = route.params;
+  const [name, setName] = useState("");
+  const [doctor, setDoctor] = useState("");
+  const [time, setTime] = useState("");
+
+  const handleBook = () => {
+    if (!name || !doctor || !time) {
+      alert("يرجى ملء جميع الحقول");
+      return;
+    }
+    // هنا يمكن ربط Firebase لتخزين المواعيد
+    alert(`تم حجز موعد في ${hospital.name} مع ${doctor} عند ${time}`);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>حجز موعد في {hospital.name}</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="اسمك"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="اسم الطبيب"
+        value={doctor}
+        onChangeText={setDoctor}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="وقت الموعد"
+        value={time}
+        onChangeText={setTime}
+      />
+
+      <Button title="احجز الآن" onPress={handleBook} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#aaa",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+});
+
+
+---
+
+🔹 ملاحظات:
+
+1. كل شيء جاهز للنسخ على جهازك.
+
+
+2. لتعمل الاستشارة + الحجز الذكي + تحديد المستشفيات تحتاج:
+
+API Key لـ OpenAI
+
+API Key لـ Google Maps Places
+
+
+
+3. يمكنك لاحقًا ربط Firebase لتخزين بيانات الحجوزات والمستخدمين.
+
+
+
+
+---
+
+🔹 الخطوة التالية
+
+لو تريد، أقدر الآن أجهز لك نسخة APK جاهزة للبناء مباشرة باستخدام Expo EAS Build بحيث تجرب التطبيق على الهاتف دون أي تعديل.
+
+هل أبدأ في تجهيز APK جاهز؟
